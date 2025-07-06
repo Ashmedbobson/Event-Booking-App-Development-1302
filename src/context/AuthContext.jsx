@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('eventHub_user');
+    const storedUser = localStorage.getItem('sierraHub_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -25,12 +25,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('eventHub_user', JSON.stringify(userData));
+    localStorage.setItem('sierraHub_user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('eventHub_user');
+    localStorage.removeItem('sierraHub_user');
   };
 
   const register = (userData) => {
@@ -38,9 +38,34 @@ export const AuthProvider = ({ children }) => {
       ...userData,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
+      interests: [],
+      notificationPrefs: {
+        emailNotifications: true,
+        pushNotifications: true,
+        smsNotifications: false,
+        eventReminders: true,
+        weeklyDigest: true,
+        promotionalEmails: false,
+        commentNotifications: true,
+        followerNotifications: true
+      },
+      privacySettings: {
+        profileVisibility: 'public',
+        showEmail: false,
+        showPhone: false,
+        showAttendedEvents: true,
+        showCreatedEvents: true,
+        allowMessages: true
+      }
     };
     setUser(newUser);
-    localStorage.setItem('eventHub_user', JSON.stringify(newUser));
+    localStorage.setItem('sierraHub_user', JSON.stringify(newUser));
+  };
+
+  const updateUser = (updates) => {
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
+    localStorage.setItem('sierraHub_user', JSON.stringify(updatedUser));
   };
 
   const value = {
@@ -48,6 +73,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     register,
+    updateUser,
     isLoading,
   };
 

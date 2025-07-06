@@ -6,13 +6,30 @@ import SafeIcon from '../common/SafeIcon';
 import { useAuth } from '../context/AuthContext';
 import { useEvents } from '../context/EventContext';
 import EventCard from '../components/EventCard';
+import TicketManager from '../components/TicketManager';
+import OrganizerDashboard from '../components/OrganizerDashboard';
 
-const { FiUser, FiCalendar, FiUsers, FiTrendingUp, FiEdit, FiMail, FiMapPin, FiSettings } = FiIcons;
+const { FiUser, FiCalendar, FiUsers, FiTrendingUp, FiEdit, FiSettings, FiTicket } = FiIcons;
 
 const ProfilePage = () => {
   const { user } = useAuth();
   const { userEvents, attendedEvents } = useEvents();
   const [activeTab, setActiveTab] = useState('created');
+
+  // Mock user tickets
+  const userTickets = [
+    {
+      id: 'ticket_1',
+      event: userEvents[0] || {
+        title: 'Sample Event',
+        startDate: new Date().toISOString(),
+        location: 'Sample Location'
+      },
+      type: 'General Admission',
+      price: 25,
+      orderId: 'ORD-001'
+    }
+  ];
 
   if (!user) {
     return (
@@ -48,8 +65,30 @@ const ProfilePage = () => {
 
   const tabs = [
     { id: 'created', label: 'Created Events', count: userEvents.length },
-    { id: 'attended', label: 'Attended Events', count: attendedEvents.length }
+    { id: 'attended', label: 'Attended Events', count: attendedEvents.length },
+    { id: 'tickets', label: 'My Tickets', count: userTickets.length },
+    { id: 'dashboard', label: 'Organizer Dashboard', count: 0 }
   ];
+
+  const handleShareTicket = (ticket) => {
+    // Mock share functionality
+    console.log('Sharing ticket:', ticket);
+  };
+
+  const handleDownloadTicket = (ticket) => {
+    // Mock download functionality
+    console.log('Downloading ticket:', ticket);
+  };
+
+  const handleSendMessage = (eventId, messageData) => {
+    // Mock message sending
+    console.log('Sending message for event:', eventId, messageData);
+  };
+
+  const handlePromoteEvent = (eventId) => {
+    // Mock event promotion
+    console.log('Promoting event:', eventId);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -110,7 +149,7 @@ const ProfilePage = () => {
           ))}
         </div>
 
-        {/* Events Section */}
+        {/* Content Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,15 +170,17 @@ const ProfilePage = () => {
                   }`}
                 >
                   {tab.label}
-                  <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
-                    {tab.count}
-                  </span>
+                  {tab.count > 0 && (
+                    <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               ))}
             </nav>
           </div>
 
-          {/* Events Grid */}
+          {/* Tab Content */}
           <div>
             {activeTab === 'created' && (
               <div>
@@ -185,6 +226,22 @@ const ProfilePage = () => {
                   </div>
                 )}
               </div>
+            )}
+
+            {activeTab === 'tickets' && (
+              <TicketManager
+                userTickets={userTickets}
+                onShareTicket={handleShareTicket}
+                onDownloadTicket={handleDownloadTicket}
+              />
+            )}
+
+            {activeTab === 'dashboard' && (
+              <OrganizerDashboard
+                userEvents={userEvents}
+                onSendMessage={handleSendMessage}
+                onPromoteEvent={handlePromoteEvent}
+              />
             )}
           </div>
         </motion.div>
